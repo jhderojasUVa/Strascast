@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Strascast - Strasphoto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Foundation -->
+    <link href="css/foundation.min.css" rel="stylesheet" type="text/css">
+    <link href="css/app.css" rel="stylesheet" type="text/css">
+    <script src="js/vendor/jquery.js"></script>
+    <script src="js/vendor/foundation.min.js"></script>
+    <script src="js/vendor/what-input.js"></script>
+    <script src="js/app.js"></script>
+    <!-- React -->
+    <script src="https://unpkg.com/react@latest/dist/react.js"></script>
+    <script src="https://unpkg.com/react-dom@latest/dist/react-dom.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <!-- Axios -->
+    <script src="js/axios.js"></script>
+  </head>
+  <body>
+    <nav role="navigation">
+      <div class="top-bar">
+        <div class="top-bar-left">
+          <ul class="menu">
+            <li><figure><a href="/" role="link"><img src="img/strascast_font.png" alt="Strascast"/></a></figure></li>
+          </ul>
+        </div>
+        <div class="top-bar-left">
+          <ul class="menu">
+            <li><figure><a href="/blog" role="link"><img src="img/strasblog.png" alt="strasblog"></a></figure></li>
+            <li><figure><a href="strasphoto.html" role="link"><img src="img/strasphoto.png" alt="strasphoto"></a></figure></li>
+            <li><figure><a href="#" role="link"><img src="img/strasvideo.png" alt="strasvideo"></a></figure></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <article>
+      <div class="grid-container">
+        <div class="grid-x grid-margin-x">
+          <div class="cell small-12 medium-8 medium-offset-2 large-8 large-offset-2">
+            <div id="content"></div>
+          </div>
+        </div>
+      </div>
+      <div style="padding-top: 2px; background-color: rgba(10, 10, 10, 0.5);"></div>
+      <div class="grid-container">
+        <div class="grid-x grid-margin-x">
+          <div class="cell small-12 medium-8 medium-offset-2 large-8 large-offset-2" style="margin-bottom: 10px;">
+            <section>
+              <header><h2>Be social</h2></header>
+              <p class="text-right">
+                <a href="http://www.facebook.com/strascast" target="_blank" role="link"><img src="img/icons/facebook.png" alt="Facebook" style="width: 30px"></a>
+                <a href="http://www.twitter.com/strascast" target="_blank" role="link"><img src="img/icons/twitter.png" alt="Twitter" style="width: 30px"></a>
+                <a href="http://www.vimeo.com/tuti" target="_blank" role="link"><img src="img/icons/vimeo.png" alt="Vimeo" style="width: 30px"></a>
+                <a href="http://www.youtube.com/tuti" target="_blank" role="link"><img src="img/icons/youtube.png" alt="Youtube" style="width: 30px"></a>
+              </p>
+            </section>
+          </div>
+        </div>
+
+      <script type="text/babel">
+      const flickr_url = "http://api.flickr.com/services/feeds/photos_public.gne?id=89995520@N00&format=json";
+      //  const flickr_url_proxy = "http://strascast.no-ip.info/productos/strascast_future/proxy.php?http://api.flickr.com/services/feeds/photos_public.gne?id=89995520@N00&format=json";
+      const flickr_url_proxy = "http://localhost/proxy.php?http://api.flickr.com/services/feeds/photos_public.gne?id=89995520@N00&format=json";
+
+      const style_flickr = {
+        columnCount: 3,
+      };
+
+      const style_flickr_elm = {
+        margin: "1em",
+      }
+
+      $.ajax({
+        url: flickr_url_proxy,
+        dataType: "jsonp"
+      }).done(data => {
+        console.log("All is ok... for now.");
+      });
+
+      function jsonFlickrFeed (response) {
+        //console.log (response);
+        console.log (response.items);
+        var array_json = new Array();
+        for (var keys in response.items) {
+          array_json.push([
+            response.items[keys].title,
+            response.items[keys].link,
+            response.items[keys].media.m
+          ]);
+        }
+        console.log(array_json.length);
+
+        class Flickr_feed extends React.Component {
+          constructor (props) {
+            super (props);
+            this.state = { data: array_json };
+          };
+
+          componentDidMount() {
+            console.log("componentDidMount");
+          }
+
+          render() {
+            console.log("render");
+            var img_flickr = array_json.map(function(image) {
+              return <figure><center><a href={image[1]} role="link"><img src={image[2]} alt={image[0]} style={style_flickr_elm}/></a></center></figure>
+            });
+            return (
+              <div className="flickr_feed">
+              <h2>Images from <a href="http://flickr.com/jhderojas" role="link">Flickr</a></h2>
+              <p>The images showing next are from our Flickr account.</p>
+              <div style={style_flickr}>{img_flickr}</div>
+              </div>
+            );
+          }
+
+        } // Fin del componente
+
+        ReactDOM.render(
+          <Flickr_feed />,
+          document.getElementById("content")
+        );
+      }
+
+      </script>
+  </body>
+</html>
